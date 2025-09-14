@@ -38,23 +38,23 @@ const Navbar = () => {
 
   return (
     <header className="sticky top-0 z-50 bg-white shadow-sm border-b border-gray-200">
-      <div className="flex items-center justify-between px-4 py-3 md:px-10">
-
-        {/* Logo and Location Selector */}
-        <div className="flex items-center gap-4">
+      <div className="flex items-center justify-between px-4 py-3 sm:px-6 md:px-10">
+        {/* Left Section: Logo + Location */}
+        <div className="flex items-center gap-4 flex-shrink-0">
           <img
             src={assets.logo}
             alt="logo"
-            className="w-32 md:w-40 cursor-pointer"
+            className="w-28 sm:w-32 md:w-40 cursor-pointer"
             onClick={() => navigate("/")}
           />
 
+          {/* Location Selector - hide on very small screens */}
           <div
             onClick={() => setShowLocationModal(true)}
-            className="flex items-center gap-1 text-sm text-gray-700 cursor-pointer hover:text-primary"
+            className="hidden sm:flex items-center gap-1 text-sm text-gray-700 cursor-pointer hover:text-primary"
           >
             <img src={assets.location_icon} alt="Location" className="w-4 h-4" />
-            <span>{location || "Select location"}</span>
+            <span className="truncate max-w-[100px]">{location || "Select location"}</span>
             <img src={assets.dropdown_icon} alt="Dropdown" className="w-3" />
           </div>
         </div>
@@ -62,7 +62,7 @@ const Navbar = () => {
         {/* Desktop Search */}
         <form
           onSubmit={handleSearch}
-          className="hidden md:flex items-center bg-gray-100 px-3 py-2 rounded-md w-full max-w-md mx-6"
+          className="hidden lg:flex items-center bg-gray-100 px-3 py-2 rounded-md w-full max-w-md mx-6"
         >
           <img
             src={assets.search_icon}
@@ -78,37 +78,38 @@ const Navbar = () => {
           />
         </form>
 
-        {/* Desktop User Controls */}
-        <div className="hidden md:flex items-center gap-4">
-          {token && userData ? (
-            <div className="relative group cursor-pointer flex items-center gap-2">
-              <img
-                className="w-8 h-8 rounded-full object-cover"
-                src={userData.image}
-                alt="User"
-              />
-              <img className="w-3" src={assets.dropdown_icon} alt="dropdown" />
-              <div className="absolute top-12 right-0 z-30 hidden group-hover:block bg-white shadow-lg rounded-md text-sm min-w-[160px] p-4">
-                <p onClick={() => navigate("/my-profile")} className="cursor-pointer hover:text-primary mb-2">My Profile</p>
-                <p onClick={() => navigate("/my-appointments")} className="cursor-pointer hover:text-primary mb-2">My Appointments</p>
-                <p onClick={logout} className="cursor-pointer hover:text-primary">Logout</p>
+        {/* Right Section: User + Hamburger */}
+        <div className="flex items-center gap-4">
+          {/* Desktop User Menu */}
+          <div className="hidden md:flex items-center gap-4">
+            {token && userData ? (
+              <div className="relative group cursor-pointer flex items-center gap-2">
+                <img
+                  className="w-8 h-8 rounded-full object-cover"
+                  src={userData.image}
+                  alt="User"
+                />
+                <img className="w-3" src={assets.dropdown_icon} alt="dropdown" />
+                <div className="absolute top-12 right-0 z-30 hidden group-hover:block bg-white shadow-lg rounded-md text-sm min-w-[160px] p-4">
+                  <p onClick={() => navigate("/my-profile")} className="cursor-pointer hover:text-primary mb-2">My Profile</p>
+                  <p onClick={() => navigate("/my-appointments")} className="cursor-pointer hover:text-primary mb-2">My Appointments</p>
+                  <p onClick={logout} className="cursor-pointer hover:text-primary">Logout</p>
+                </div>
               </div>
-            </div>
-          ) : (
-            <button
-              onClick={() => navigate("/login")}
-              className="bg-primary text-white px-6 py-2 rounded-full text-sm"
-            >
-              Login
-            </button>
-          )}
-        </div>
+            ) : (
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-primary text-white px-6 py-2 rounded-full text-sm"
+              >
+                Login
+              </button>
+            )}
+          </div>
 
-        {/* Hamburger Icon (Always Visible) */}
-        <div className="flex items-center gap-3">
+          {/* Hamburger (always visible) */}
           <img
             onClick={() => setDrawerOpen(true)}
-            className="w-6 cursor-pointer"
+            className="w-6 cursor-pointer block"
             src={assets.menu_icon}
             alt="menu"
           />
@@ -126,6 +127,7 @@ const Navbar = () => {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="p-5 flex flex-col h-full">
+            {/* Drawer Header */}
             <div className="flex justify-between items-center mb-4">
               <img src={assets.logo} className="w-28" alt="Logo" />
               <img
@@ -149,7 +151,7 @@ const Navbar = () => {
               <img src={assets.dropdown_icon} alt="Dropdown" className="w-3" />
             </div>
 
-            {/* Search Field */}
+            {/* Mobile Search */}
             <form
               onSubmit={handleSearch}
               className="flex items-center bg-gray-100 px-3 py-2 rounded-md mb-4"
@@ -161,7 +163,7 @@ const Navbar = () => {
               />
               <input
                 type="text"
-                placeholder="Search"
+                placeholder="Search doctors or lab tests"
                 className="bg-transparent flex-1 text-sm outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
@@ -172,7 +174,6 @@ const Navbar = () => {
             <ul className="flex flex-col gap-3 text-base font-medium text-gray-800">
               <NavLink to="/" onClick={() => setDrawerOpen(false)}>Home</NavLink>
               <NavLink to="/doctors" onClick={() => setDrawerOpen(false)}>All Doctors</NavLink>
-              
               <NavLink to="/about" onClick={() => setDrawerOpen(false)}>About</NavLink>
               <NavLink to="/contact" onClick={() => setDrawerOpen(false)}>Contact</NavLink>
               {token && (
