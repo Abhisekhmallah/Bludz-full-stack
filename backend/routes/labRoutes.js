@@ -1,58 +1,18 @@
+// backend/routes/labRoute.js
 import express from "express";
-import Lab from "../models/Lab.js";
+import { addLab, allLabs, publicLabsList, labProfile, changeLabAvailability } from "../controllers/labController.js";
+import authAdmin from "../middleware/authAdmin.js";
+import upload from "../middleware/multer.js";
 
 const router = express.Router();
 
-// @desc Get all labs
-router.get("/", async (req, res) => {
-  try {
-    const labs = await Lab.find();
-    res.json(labs);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Admin routes
+router.post("/admin/add-lab", authAdmin, upload.single("image"), addLab);
+router.get("/admin/all-labs", authAdmin, allLabs);
+router.post("/admin/change-lab-availability", authAdmin, changeLabAvailability);
 
-// @desc Add a new lab
-router.post("/", async (req, res) => {
-  try {
-    const lab = new Lab(req.body);
-    await lab.save();
-    res.status(201).json(lab);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// @desc Get single lab
-router.get("/:id", async (req, res) => {
-  try {
-    const lab = await Lab.findById(req.params.id);
-    if (!lab) return res.status(404).json({ error: "Lab not found" });
-    res.json(lab);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-// @desc Update lab
-router.put("/:id", async (req, res) => {
-  try {
-    const lab = await Lab.findByIdAndUpdate(req.params.id, req.body, { new: true });
-    res.json(lab);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-// @desc Delete lab
-router.delete("/:id", async (req, res) => {
-  try {
-    await Lab.findByIdAndDelete(req.params.id);
-    res.json({ message: "Lab deleted" });
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
+// Public routes
+router.get("/labs/list", publicLabsList);
+router.get("/labs/:id", labProfile);
 
 export default router;
