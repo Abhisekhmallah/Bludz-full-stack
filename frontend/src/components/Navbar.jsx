@@ -174,6 +174,7 @@ const Navbar = () => {
             <ul className="flex flex-col gap-3 text-base font-medium text-gray-800">
               <NavLink to="/" onClick={() => setDrawerOpen(false)}>Home</NavLink>
               <NavLink to="/doctors" onClick={() => setDrawerOpen(false)}>All Doctors</NavLink>
+              
               <NavLink to="/about" onClick={() => setDrawerOpen(false)}>About</NavLink>
               <NavLink to="/contact" onClick={() => setDrawerOpen(false)}>Contact</NavLink>
               {token && (

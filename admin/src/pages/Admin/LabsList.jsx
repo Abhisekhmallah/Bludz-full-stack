@@ -1,58 +1,34 @@
-import React, { useEffect, useContext } from "react";
+// admin/src/pages/Admin/LabsList.jsx
+import React, { useContext, useEffect } from "react";
 import { AdminContext } from "../../context/AdminContext";
+import { assets } from "../../assets/assets";
 
 const LabsList = () => {
-  const { labs, getAllLabs, changeLabAvailability } = useContext(AdminContext);
+  const { labs, getAllLabs, changeLabAvailability, aToken } = useContext(AdminContext);
 
   useEffect(() => {
-    getAllLabs();
-  }, []);
+    if (aToken) getAllLabs();
+  }, [aToken]);
 
   return (
-    <div className="p-5">
-      <h2 className="text-2xl font-semibold mb-4">Labs List</h2>
+    <div className="m-5 max-h-[90vh] overflow-y-scroll">
+      <h1 className="text-lg font-medium mb-4">All Labs</h1>
 
-      {labs.length === 0 ? (
-        <p className="text-gray-500">No labs found.</p>
-      ) : (
-        <table className="w-full border border-gray-200 text-left rounded-lg overflow-hidden">
-          <thead className="bg-gray-100">
-            <tr>
-              <th className="py-3 px-4 border-b">#</th>
-              <th className="py-3 px-4 border-b">Lab Name</th>
-              <th className="py-3 px-4 border-b">Email</th>
-              <th className="py-3 px-4 border-b">Phone</th>
-              <th className="py-3 px-4 border-b">Status</th>
-              <th className="py-3 px-4 border-b text-right">Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {labs.map((lab, index) => (
-              <tr key={lab._id} className="border-b">
-                <td className="py-3 px-4">{index + 1}</td>
-                <td className="py-3 px-4">{lab.name}</td>
-                <td className="py-3 px-4">{lab.email}</td>
-                <td className="py-3 px-4">{lab.phone}</td>
-                <td className="py-3 px-4">
-                  {lab.available ? (
-                    <span className="text-green-600 font-medium">Available</span>
-                  ) : (
-                    <span className="text-red-600 font-medium">Unavailable</span>
-                  )}
-                </td>
-                <td className="py-3 px-4 text-right">
-                  <button
-                    onClick={() => changeLabAvailability(lab._id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-1 rounded-lg text-sm"
-                  >
-                    Toggle
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+      <div className="grid grid-cols-1 gap-4">
+        {labs?.map((lab) => (
+          <div key={lab._id} className="flex items-center gap-4 p-3 border rounded">
+            <img src={lab.image || assets.doctor_icon} alt={lab.name} className="w-16 h-16 object-cover rounded" />
+            <div className="flex-1">
+              <p className="text-lg font-medium">{lab.name}</p>
+              <p className="text-sm text-gray-600">{lab.city} • {lab.phone}</p>
+              <div className="mt-2 flex items-center gap-2 text-sm">
+                <input type="checkbox" checked={lab.available} onChange={() => changeLabAvailability(lab._id)} />
+                <span>Available</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
