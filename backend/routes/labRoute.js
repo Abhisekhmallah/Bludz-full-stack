@@ -1,10 +1,17 @@
 import express from "express";
-import { addLab, getLabs, getLabById } from "../controllers/labController.js";
+import { addLab, allLabs, publicLabsList, labProfile, changeLabAvailability } from "../controllers/labController.js";
+import authAdmin from "../middleware/authAdmin.js";
+import upload from "../middleware/multer.js";
 
 const router = express.Router();
 
-router.post("/", addLab);  // Add lab
-router.get("/", getLabs);  // Get all labs
-router.get("/:id", getLabById);  // Get lab by ID
+// Admin routes (protected)
+router.post("/admin/add-lab", authAdmin, upload.single("image"), addLab);
+router.get("/admin/all-labs", authAdmin, allLabs);
+router.post("/admin/change-lab-availability", authAdmin, changeLabAvailability);
+
+// Public routes
+router.get("/labs/list", publicLabsList);
+router.get("/labs/:id", labProfile);
 
 export default router;

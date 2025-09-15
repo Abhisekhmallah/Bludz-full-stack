@@ -1,33 +1,90 @@
-import Lab from "../models/labModel.js";
+import labModel from "../models/labModel.js";
+import { v2 as cloudinary } from "cloudinary";
 
-// Add a new Lab
+// Admin: add lab (multipart form-data image upload handled by multer upload middleware)
 export const addLab = async (req, res) => {
   try {
-    const newLab = new Lab(req.body);
-    await newLab.save();
-    res.status(201).json({ success: true, message: "Lab added successfully", data: newLab });
+    const {
+      name,
+      email,
+      address,
+      city,
+      phone,
+      about,
+      services = "",
+      fees = 0,
+    } = req.body;
+
+    let imageUrl = "";
+    if (req.file) {
+      // upload to cloudinary if configured
+      const result = await cloudinary.uploader.upload(req.file.path, {
+        folder: "labs",
+      });
+      imageUrl = result.secure_url;
+    }
+
+    const lab = await labModel.create({
+      name,
+      email,
+      image: imageUrl,
+      address,
+      city,
+      phone,
+      about,
+      services: services ? services.split(",").map(s => s.trim()) : [],
+      fees,
+    });
+
+    res.status(201).send({ success: true, message: "Lab added", lab });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error(error);
+    res.status(500).send({ success: false, message: error.message });
   }
 };
 
-// Get all Labs
-export const getLabs = async (req, res) => {
+// Admin: get all labs (protected)
+export const allLabs = async (req, res) => {
   try {
-    const labs = await Lab.find();
-    res.status(200).json({ success: true, data: labs });
+    const labs = await labModel.find().sort({ createdAt: -1 });
+    res.send({ success: true, labs });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).send({ success: false, message: error.message });
   }
 };
 
-// Get Single Lab by ID
-export const getLabById = async (req, res) => {
+// Public: list labs (for frontend)
+export const publicLabsList = async (req, res) => {
   try {
-    const lab = await Lab.findById(req.params.id);
-    if (!lab) return res.status(404).json({ success: false, message: "Lab not found" });
-    res.status(200).json({ success: true, data: lab });
+    const labs = await labModel.find({ available: true }).sort({ createdAt: -1 });
+    res.send({ success: true, labs });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
+// Public: get single lab profile
+export const labProfile = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const lab = await labModel.findById(id);
+    if (!lab) return res.status(404).send({ success: false, message: "Lab not found" });
+    res.send({ success: true, lab });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
+  }
+};
+
+// Admin: change availability (toggle) (protected)
+export const changeLabAvailability = async (req, res) => {
+  try {
+    const { id } = req.body;
+    const lab = await labModel.findById(id);
+    if (!lab) return res.status(404).send({ success: false, message: "Lab not found" });
+    lab.available = !lab.available;
+    await lab.save();
+    res.send({ success: true, message: "Availability updated" });
+  } catch (error) {
+    res.status(500).send({ success: false, message: error.message });
   }
 };

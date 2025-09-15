@@ -181,6 +181,8 @@ const Navbar = () => {
                 <>
                   <NavLink to="/my-profile" onClick={() => setDrawerOpen(false)}>My Profile</NavLink>
                   <NavLink to="/my-appointments" onClick={() => setDrawerOpen(false)}>My Appointments</NavLink>
+                  <NavLink to="/labs" onClick={() => setDrawerOpen(false)}>Labs</NavLink>
+
                   <p onClick={() => { logout(); setDrawerOpen(false); }} className="cursor-pointer text-red-500 mt-2">Logout</p>
                 </>
               )}

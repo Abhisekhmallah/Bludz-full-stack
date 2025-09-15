@@ -1,4 +1,3 @@
-// frontend/src/pages/LabAppointment.jsx
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
@@ -34,7 +33,9 @@ const LabAppointment = () => {
     e.preventDefault();
     if (!date || !time) return alert("Select date & time");
     try {
-      // navigate to checkout with booking info (adapt if you need to create appointment server-side)
+      // Create a tentative appointment object similar to doctor appointment
+      // Adapt this to your existing checkout flow. Here we'll navigate to checkout route
+      // passing lab, date, time and type=lab as state or query params
       navigate("/checkout", {
         state: {
           type: "lab",
